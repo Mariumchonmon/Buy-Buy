@@ -1,8 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
+import 'package:http/http.dart' as http;
 import '../models/http_exception.dart';
 import './item.dart';
 
@@ -12,7 +11,9 @@ class Items with ChangeNotifier {
   final String? authToken;
   final String? userId;
 
-  Items(this.authToken, this.userId, this._items);
+  Items(this.authToken, this.userId,  this._items);
+
+
 
   List<Item> get items {
     return [..._items];
@@ -25,13 +26,13 @@ class Items with ChangeNotifier {
   Item findById(String id) {
     return _items.firstWhere((prod) => prod.id == id);
   }
-
-  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async{
+    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     var url = Uri.parse('https://buy-buy-14c0a-default-rtdb.firebaseio.com/items.json?auth=$authToken&&filterString');
     try{
       final response = await http.get(url);
-      dynamic extractedData = json.decode(response.body) as Map<String, dynamic>;
-      if (extractedData == null) {
+      dynamic extractedData = json.decode(response.body);
+      if (extractedData == null){
         return;
       }
       url = Uri.parse('https://buy-buy-14c0a-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken');
@@ -45,20 +46,22 @@ class Items with ChangeNotifier {
           description: prodData['description'],
           price: prodData['price'],
           isFavorite:
-              favoriteData == null ? false : favoriteData[prodId] ?? false,
+          favoriteData == null ? false : favoriteData[prodId] ?? false,
           imageUrl: prodData['imageUrl'],
         ));
       });
       _items = loadedProducts;
       notifyListeners();
-    } catch (error) {
-      throw (error);
+    }
+    // catch (error){
+    //   throw error;
+    // }
+    catch (error) {
+      return;
     }
   }
-
-  Future<void> addItem(Item item) async {
-    final url =
-     Uri.parse('https://buy-buy-14c0a-default-rtdb.firebaseio.com/items.json?auth=$authToken');
+  Future<void> addProduct(Item item) async {
+    final url = Uri.parse('https://buy-buy-14c0a-default-rtdb.firebaseio.com/items.json?auth=$authToken');
     try {
       final response = await http.post(
         url,
@@ -78,9 +81,8 @@ class Items with ChangeNotifier {
         id: json.decode(response.body)['name'],
       );
       _items.add(newProduct);
-      // _items.insert(0, newProduct); // at the start of the list
       notifyListeners();
-    } catch (error) {
+    } catch(error) {
       print(error);
       throw error;
     }
@@ -89,8 +91,7 @@ class Items with ChangeNotifier {
   Future<void> updateProduct(String id, Item newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url =
-      Uri.parse('https://buy-buy-14c0a-default-rtdb.firebaseio.com/items/$id.json?auth=$authToken');
+      final url = Uri.parse('https://buy-buy-14c0a-default-rtdb.firebaseio.com/items/$id.json?auth=$authToken');
       await http.patch(url,
           body: json.encode({
             'title': newProduct.title,
@@ -106,8 +107,7 @@ class Items with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url =
-    Uri.parse('https://buy-buy-14c0a-default-rtdb.firebaseio.com/$id.json?auth=$authToken');
+    final url = Uri.parse('https://buy-buy-14c0a-default-rtdb.firebaseio.com/items/$id.json?auth=$authToken');
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     Item? existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
@@ -118,6 +118,9 @@ class Items with ChangeNotifier {
       notifyListeners();
       throw HttpException('Could not delete product.');
     }
+
     existingProduct = null;
   }
+
+
 }
