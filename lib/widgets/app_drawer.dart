@@ -1,9 +1,10 @@
+import 'package:buy_buy/providers/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/bids_screen.dart';
 import '../screens/user_items_screen.dart';
-import '../providers/auth.dart';
-import 'package:provider/provider.dart';
+
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -35,7 +36,7 @@ class AppDrawer extends StatelessWidget {
           Divider(),
           ListTile(
             leading: Icon(Icons.edit),
-            title: Text('Create Item'),
+            title: Text('Edit Item'),
             onTap: () {
               Navigator.of(context)
                   .pushReplacementNamed(UserItemsScreen.routeName);
@@ -55,17 +56,27 @@ class AppDrawer extends StatelessWidget {
                       content: Text('You Want to Logout?'),
                       actions: <Widget> [
                         FlatButton(
+                          onPressed: () =>
+                            Navigator.of(context).pop(),
                           child: Text('Cancel'),
-                          onPressed: () => Navigator.of(context).pop(false),
                         ),
                         FlatButton(
-                          onPressed: () => Navigator.of(context).pop(true),
+                          onPressed: () {
+                            Navigator.of(context).pushReplacementNamed('/');
+                           Navigator.of(context).pop();
+                           Provider.of<Auth>(context, listen: false).logout();
+
+                          },
                           child: Text('Ok'),
                         ),
                       ],
                     ),
               );
-              Provider.of<Auth>(context, listen: false).logout();
+             // Navigator.of(context).pop();
+            //  Navigator.of(context).pushReplacementNamed('/');
+
+
+
             },
           ),
         ],

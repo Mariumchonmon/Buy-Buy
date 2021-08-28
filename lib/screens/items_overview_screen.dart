@@ -7,6 +7,7 @@ import './cart_screen.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/badge.dart';
 import '../widgets/items_grid.dart';
+import 'edit_item_screen.dart';
 
 enum FilterOptions {
   Favorites,
@@ -51,6 +52,7 @@ class _ItemsOverviewScreenState extends State<ItemsOverviewScreen> {
         title: Text('Buy-Buy',
         ),
         actions: <Widget>[
+
           PopupMenuButton(
             onSelected: (FilterOptions selectedValue) {
               setState(() {
@@ -91,6 +93,12 @@ class _ItemsOverviewScreenState extends State<ItemsOverviewScreen> {
                 Navigator.of(context).pushNamed(CartScreen.routeName);
               },
             ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).pushNamed(EditItemScreen.routeName);
+            },
           ),
         ],
       ),

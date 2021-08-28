@@ -129,7 +129,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
+        title: Text('Create Item'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save),

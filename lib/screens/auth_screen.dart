@@ -64,7 +64,7 @@ class AuthScreen extends StatelessWidget {
                         'Buy-Buy',
                         style: TextStyle(
                           color: Theme.of(context).accentTextTheme.title!.color,
-                          fontSize: 50,
+                          fontSize: 40,
                           fontFamily: 'Anton',
                           fontWeight: FontWeight.normal,
                         ),
